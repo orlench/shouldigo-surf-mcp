@@ -8,7 +8,7 @@ const API_BASE = "https://api.shouldigo.surf";
 
 const server = new McpServer({
   name: "shouldigo-surf",
-  version: "1.0.0",
+  version: "1.0.2",
 });
 
 // --- Tool: check_conditions ---
@@ -157,6 +157,46 @@ server.registerTool(
       };
     }
   }
+);
+
+// --- Prompts ---
+
+server.prompt(
+  "surf_check",
+  {
+    spot: z.string().optional().describe('Spot name or ID, e.g. "pipeline" or "bondi_beach"'),
+  },
+  ({ spot }) => ({
+    messages: [
+      {
+        role: "user",
+        content: {
+          type: "text",
+          text: spot
+            ? `Should I go surfing at ${spot} right now? Use check_conditions to get the latest data, then give me a quick verdict: yes, no, or maybe — with a one-line reason why. Keep it casual.`
+            : `Should I go surfing right now? Use find_nearest_spot to find my closest beach, check the conditions, and give me a quick verdict: yes, no, or maybe — with a one-line reason why. Keep it casual.`,
+        },
+      },
+    ],
+  })
+);
+
+server.prompt(
+  "surf_trip",
+  {
+    country: z.string().describe('Country to explore, e.g. "Portugal", "Australia", "USA"'),
+  },
+  ({ country }) => ({
+    messages: [
+      {
+        role: "user",
+        content: {
+          type: "text",
+          text: `I'm planning a surf trip to ${country}. Use list_spots to find all available spots there, then check_conditions on the top 3. Rank them by score and recommend which one I should hit first, with a short reason for each.`,
+        },
+      },
+    ],
+  })
 );
 
 // --- Helpers ---
