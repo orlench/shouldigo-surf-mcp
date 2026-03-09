@@ -1,0 +1,35 @@
+{
+  "name": "shouldigo-surf-mcp",
+  "version": "1.0.0",
+  "description": "MCP server for Should I Go? — real-time surf conditions for 73+ beaches worldwide",
+  "main": "index.js",
+  "bin": {
+    "shouldigo-surf-mcp": "./index.js"
+  },
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "surf",
+    "surf-conditions",
+    "wave-forecast",
+    "claude",
+    "ai-tools"
+  ],
+  "author": "Should I Go? <support@shouldigo.surf>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/orlench/shouldigo-surf-mcp"
+  },
+  "type": "module",
+  "files": [
+    "index.js"
+  ],
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.0",
+    "zod": "^3.23.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
