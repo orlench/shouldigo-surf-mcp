@@ -4,7 +4,7 @@
   "description": "MCP server for Should I Go? — real-time surf conditions for 73+ beaches worldwide",
   "main": "index.js",
   "bin": {
-    "shouldigo-surf-mcp": "./index.js"
+    "shouldigo-surf-mcp": "index.js"
   },
   "keywords": [
     "mcp",
@@ -19,7 +19,7 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/orlench/shouldigo-surf-mcp"
+    "url": "git+https://github.com/orlench/shouldigo-surf-mcp.git"
   },
   "type": "module",
   "files": [
