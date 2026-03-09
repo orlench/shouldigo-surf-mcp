@@ -1,2 +1,4 @@
 node_modules/
 .npmrc
+.mcpregistry_*
+mcp-publisher-bin

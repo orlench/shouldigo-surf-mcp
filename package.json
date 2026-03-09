@@ -1,6 +1,7 @@
 {
   "name": "shouldigo-surf-mcp",
-  "version": "1.0.0",
+  "version": "1.0.1",
+  "mcpName": "io.github.orlench/shouldigo-surf",
   "description": "MCP server for Should I Go? — real-time surf conditions for 73+ beaches worldwide",
   "main": "index.js",
   "bin": {
