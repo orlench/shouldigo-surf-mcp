@@ -1,6 +1,6 @@
 # shouldigo-surf-mcp
 
-MCP server for [Should I Go?](https://shouldigo.surf) — real-time surf conditions for 73+ beaches worldwide.
+MCP server for [Should I Go?](https://shouldigo.surf) — real-time surf conditions for 5,000+ beaches worldwide.
 
 Use this with Claude Desktop, Claude Code, or any MCP-compatible client to check surf conditions, find nearby spots, and get a score + verdict on whether it's worth paddling out.
 
