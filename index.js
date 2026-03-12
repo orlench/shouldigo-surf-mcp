@@ -159,6 +159,164 @@ server.registerTool(
   }
 );
 
+// --- In-memory hazard reports store ---
+
+const hazardReports = [];
+
+// --- Tool: report_hazard ---
+
+server.registerTool(
+  "report_hazard",
+  {
+    description:
+      "Report a hazard or warning at a specific surf spot. Helps other surfers stay safe by sharing information about dangerous conditions, wildlife, pollution, or other risks.",
+    inputSchema: {
+      spot: z
+        .string()
+        .describe('The spot name or ID where the hazard was observed, e.g. "pipeline", "bondi_beach"'),
+      hazardType: z
+        .enum([
+          "strong_current",
+          "sharp_rocks",
+          "jellyfish",
+          "pollution",
+          "crowding",
+          "equipment",
+          "shore_break",
+          "other",
+        ])
+        .describe("The type of hazard"),
+      severity: z
+        .enum(["low", "medium", "high", "critical"])
+        .describe("Severity level: low (be aware), medium (use caution), high (dangerous), critical (do not enter)"),
+      description: z
+        .string()
+        .describe("Detailed description of the hazard, location specifics, and safety advice"),
+      reporter: z
+        .string()
+        .optional()
+        .describe("Name of the person reporting (defaults to Anonymous)"),
+    },
+  },
+  async ({ spot, hazardType, severity, description, reporter }) => {
+    const report = {
+      id: `hr_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`,
+      spot,
+      hazardType,
+      severity,
+      description,
+      reporter: reporter || "Anonymous",
+      timestamp: new Date().toISOString(),
+    };
+
+    hazardReports.push(report);
+
+    const severityLabels = {
+      low: "Low — Be Aware",
+      medium: "Medium — Use Caution",
+      high: "High — Dangerous",
+      critical: "Critical — Do Not Enter",
+    };
+
+    const typeLabels = {
+      strong_current: "Strong Current / Rip",
+      sharp_rocks: "Sharp Rocks / Reef",
+      jellyfish: "Jellyfish / Marine Life",
+      pollution: "Pollution / Water Quality",
+      crowding: "Dangerous Crowding",
+      equipment: "Broken Equipment / Debris",
+      shore_break: "Heavy Shore Break",
+      other: "Other",
+    };
+
+    return {
+      content: [
+        {
+          type: "text",
+          text: [
+            `Hazard report submitted successfully.`,
+            ``,
+            `Report ID: ${report.id}`,
+            `Spot: ${spot}`,
+            `Type: ${typeLabels[hazardType] || hazardType}`,
+            `Severity: ${severityLabels[severity] || severity}`,
+            `Description: ${description}`,
+            `Reporter: ${report.reporter}`,
+            `Time: ${report.timestamp}`,
+          ].join("\n"),
+        },
+      ],
+    };
+  }
+);
+
+// --- Tool: get_hazards ---
+
+server.registerTool(
+  "get_hazards",
+  {
+    description:
+      "Get active hazard reports for a specific surf spot or all spots. Returns recent user-reported hazards and warnings.",
+    inputSchema: {
+      spot: z
+        .string()
+        .optional()
+        .describe('Filter by spot name or ID. If omitted, returns all recent hazards.'),
+    },
+  },
+  async ({ spot }) => {
+    let filtered = hazardReports;
+    if (spot) {
+      const q = spot.toLowerCase();
+      filtered = hazardReports.filter(
+        (r) => r.spot.toLowerCase().includes(q)
+      );
+    }
+
+    const recent = filtered.slice().reverse().slice(0, 20);
+
+    if (recent.length === 0) {
+      return {
+        content: [
+          {
+            type: "text",
+            text: spot
+              ? `No hazard reports found for "${spot}".`
+              : "No hazard reports found.",
+          },
+        ],
+      };
+    }
+
+    const severityLabels = {
+      low: "Low",
+      medium: "Medium",
+      high: "HIGH",
+      critical: "CRITICAL",
+    };
+
+    const typeLabels = {
+      strong_current: "Strong Current / Rip",
+      sharp_rocks: "Sharp Rocks / Reef",
+      jellyfish: "Jellyfish / Marine Life",
+      pollution: "Pollution / Water Quality",
+      crowding: "Dangerous Crowding",
+      equipment: "Broken Equipment / Debris",
+      shore_break: "Heavy Shore Break",
+      other: "Other",
+    };
+
+    let text = `Hazard Reports${spot ? ` for "${spot}"` : ""} (${recent.length}):\n\n`;
+    for (const r of recent) {
+      text += `[${severityLabels[r.severity] || r.severity}] ${r.spot} — ${typeLabels[r.hazardType] || r.hazardType}\n`;
+      text += `  ${r.description}\n`;
+      text += `  Reported by ${r.reporter} at ${r.timestamp}\n\n`;
+    }
+
+    return { content: [{ type: "text", text }] };
+  }
+);
+
 // --- Prompts ---
 
 server.prompt(
